@@ -10,11 +10,19 @@ import {
   ForgotPasswordScreen,
   Dashboard,
 } from './src/screens'
+import { ApolloClient, InMemoryCache, HttpLink, ApolloProvider } from '@apollo/client';
+
+// Initialize Apollo Client
+const client = new ApolloClient({
+  link: new HttpLink({uri: 'https://qoo09.sse.codesandbox.io/graphql'}),
+  cache: new InMemoryCache()
+});
 
 const Stack = createStackNavigator()
 
 const App = () => {
   return (
+    <ApolloProvider client={client}>
     <Provider theme={theme}>
       <NavigationContainer>
         <Stack.Navigator
@@ -34,6 +42,7 @@ const App = () => {
         </Stack.Navigator>
       </NavigationContainer>
     </Provider>
+    </ApolloProvider>
   )
 }
 

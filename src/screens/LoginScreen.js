@@ -10,10 +10,22 @@ import BackButton from '../components/BackButton'
 import { theme } from '../core/theme'
 import { emailValidator } from '../helpers/emailValidator'
 import { passwordValidator } from '../helpers/passwordValidator'
+import { ApolloConsumer } from '@apollo/client';
+import { gql, useMutation } from '@apollo/client';
+
+const ADD_USER = gql`
+  mutation AddUser($email: String!) {
+    createUser(email: $email) {
+      id
+      email
+    }
+  }
+`;
 
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState({ value: '', error: '' })
   const [password, setPassword] = useState({ value: '', error: '' })
+  const [AddUser, { data }] = useMutation(ADD_USER);
 
   const onLoginPressed = () => {
     const emailError = emailValidator(email.value)
@@ -29,11 +41,12 @@ const LoginScreen = ({ navigation }) => {
     })
   }
 
+
   return (
     <Background>
       <BackButton goBack={navigation.goBack} />
       <Logo />
-      <Header>Welcome back.</Header>
+      
       <TextInput
         label="Email"
         returnKeyType="next"
@@ -62,7 +75,7 @@ const LoginScreen = ({ navigation }) => {
           <Text style={styles.forgot}>Forgot your password?</Text>
         </TouchableOpacity>
       </View>
-      <Button mode="contained" onPress={onLoginPressed}>
+      <Button mode="contained" onPress={AddUser({ variables: { email: "pleaswork"} })}>
         Login
       </Button>
       <View style={styles.row}>
