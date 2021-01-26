@@ -11,34 +11,23 @@ import { theme } from '../core/theme'
 import { emailValidator } from '../helpers/emailValidator'
 import { passwordValidator } from '../helpers/passwordValidator'
 import { ApolloConsumer } from '@apollo/client';
+import { LOGIN_USER } from '../api/mutations';
 import { gql, useMutation } from '@apollo/client';
-
-const ADD_USER = gql`
-  mutation AddUser($email: String!) {
-    createUser(email: $email) {
-      id
-      email
-    }
-  }
-`;
 
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState({ value: '', error: '' })
   const [password, setPassword] = useState({ value: '', error: '' })
-  const [AddUser, { data }] = useMutation(ADD_USER);
+  const [LoginUser, { data }] = useMutation(LOGIN_USER);
 
-  const onLoginPressed = () => {
-    const emailError = emailValidator(email.value)
-    const passwordError = passwordValidator(password.value)
-    if (emailError || passwordError) {
-      setEmail({ ...email, error: emailError })
-      setPassword({ ...password, error: passwordError })
-      return
-    }
-    navigation.reset({
-      index: 0,
-      routes: [{ name: 'Dashboard' }],
-    })
+  const onLoginPressed = async () => {
+    await LoginUser({ variables: { email: email.value, password: password.value} }).then((data) => {
+      console.log(data);
+      navigation.navigate('Dashboard', { inviteCode: data.data.login.inviteCode })
+    }).catch((err) => {
+      setEmail({...email, error: err.toString()})
+    });
+
+
   }
 
 
@@ -75,7 +64,7 @@ const LoginScreen = ({ navigation }) => {
           <Text style={styles.forgot}>Forgot your password?</Text>
         </TouchableOpacity>
       </View>
-      <Button mode="contained" onPress={AddUser({ variables: { email: "pleaswork"} })}>
+      <Button mode="contained" onPress={() => onLoginPressed()}>
         Login
       </Button>
       <View style={styles.row}>

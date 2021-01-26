@@ -8,29 +8,60 @@ import Button from '../components/Button'
 import TextInput from '../components/TextInput'
 import BackButton from '../components/BackButton'
 import { theme } from '../core/theme'
+import { gql, useMutation } from '@apollo/client';
 import { emailValidator } from '../helpers/emailValidator'
 import { passwordValidator } from '../helpers/passwordValidator'
 import { inviteValidator } from '../helpers/inviteValidator'
 
+const ADD_USER = gql`
+  mutation AddUser( $email: String!, $password: String!,$inviteCode: String!) {
+    createUser(email: $email, password: $password, inviteCode: $inviteCode) {
+      id
+      email
+      password
+      inviteCode
+    }
+  }
+`;
+
 const RegisterScreen = ({ navigation }) => {
-  const [invite, setInvite] = useState({ value: '', error: '' })
+  const [inviteCode, setInvite] = useState({ value: '', error: '' })
   const [email, setEmail] = useState({ value: '', error: '' })
   const [password, setPassword] = useState({ value: '', error: '' })
+  const [AddUser, { data }] = useMutation(ADD_USER);
 
-  const onSignUpPressed = () => {
-    const inviteError = inviteValidator(invite.value)
+  const onSignUpPressed = async () => {
+    const inviteError = inviteValidator(inviteCode.value)
     const emailError = emailValidator(email.value)
     const passwordError = passwordValidator(password.value)
     if (emailError || passwordError || inviteError) {
-      setInvite({ ...invite, error: inviteError })
+      setInvite({ ...inviteCode, error: inviteError })
       setEmail({ ...email, error: emailError })
       setPassword({ ...password, error: passwordError })
       return
     }
-    navigation.reset({
-      index: 0,
-      routes: [{ invite: 'Dashboard' }],
-    })
+
+    await AddUser({ variables: { inviteCode: inviteCode.value, email: email.value, password: password.value } }).then((data) => {
+      setInvite({ ...inviteCode, error: '' })
+      setEmail({ ...email, error: '' })
+      setPassword({ ...password, error: '' })
+
+      console.log(data.data);
+
+      navigation.navigate('Dashboard', { inviteCode: data.data.createUser.inviteCode })
+
+    }).catch((err) => {
+      if(err.toString().includes("Email")){
+      setEmail({ ...email, error: err.toString() });
+      } else {
+        setInvite({ ...inviteCode, error: err.toString() });
+      }
+    });
+
+    // navigation.reset({
+    //   index: 0,
+    //   routes: [{ invite: 'Dashboard' }],
+    // })
   }
 
   return (
@@ -41,10 +72,10 @@ const RegisterScreen = ({ navigation }) => {
       <TextInput
         label="Invite Code"
         returnKeyType="next"
-        value={invite.value}
+        value={inviteCode.value}
         onChangeText={(text) => setInvite({ value: text, error: '' })}
-        error={!!invite.error}
-        errorText={invite.error}
+        error={!!inviteCode.error}
+        errorText={inviteCode.error}
       />
       <TextInput
         label="Email"

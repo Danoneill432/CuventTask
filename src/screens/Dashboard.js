@@ -5,13 +5,14 @@ import Header from '../components/Header'
 import Paragraph from '../components/Paragraph'
 import Button from '../components/Button'
 
-const Dashboard = ({ navigation }) => (
+const Dashboard = ({ route, navigation }) => (
   <Background>
     <Logo />
-    <Header>Let’s start</Header>
+    <Header>Personal Invite Code</Header>
     <Paragraph>
-      Your amazing app starts here. Open you favorite code editor and start
-      editing this project.
+     This invite code can be used to invite other people to the app {"\n"}{"\n"}
+
+     <Header>{JSON.stringify(route.params.inviteCode)}</Header>
     </Paragraph>
     <Button
       mode="outlined"

@@ -26,6 +26,7 @@ yarn install
 ## Preview
 
 ![register](https://trello-attachments.s3.amazonaws.com/600eeb1a22baad664b16ddd4/600eebcaef9a5b6b95ad9c76/16b0662378b3555c9120e35a4a0da9c2/design.png)
+![graphql](https://trello-attachments.s3.amazonaws.com/600eeb1a22baad664b16ddd4/600ef3bb9197197f1b27d3e0/46db343f10ea8a98607179f6d757fc5c/Untitled-3.png)
 
 ## Support
 
